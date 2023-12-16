@@ -20,10 +20,37 @@ export const controller = Router();
       }),
     )
 
-    .use(authorizationMiddleware)
+    /**
+     * @openapi
+     *
+     * /create:
+     *  post:
+     *    summary: create new authenticator
+     *    requestBody:
+     *      content:
+     *        application/json:
+     *          schema:
+     *            type: object
+     *            properties:
+     *              name:
+     *                type: string
+     *                required: true
+     *              key:
+     *                type: string
+     *                required: true
+     *          example:
+     *            name: facebook (username)
+     *            key: secret
+     *    responses:
+     *      '200':
+     *        description: Successful response
+     *        content:
+     *          application/json: {}
+     */
 
     .post(
       '/create',
+      authorizationMiddleware,
       validate('BODY', AuthenticatorCreateDto),
       wrapper(async function (request) {
         const authenticator = await authenticatorService.create(
@@ -37,8 +64,22 @@ export const controller = Router();
       }),
     )
 
+    /**
+     * @openapi
+     *
+     * /read:
+     *  get:
+     *    summary: get list of authenticators
+     *    responses:
+     *      '200':
+     *        description: Successful response
+     *        content:
+     *          application/json: {}
+     */
+
     .get(
       '/read',
+      authorizationMiddleware,
       wrapper(async function () {
         const authenticators = await authenticatorService.getList();
 
@@ -48,8 +89,36 @@ export const controller = Router();
       }),
     )
 
+    /**
+     * @openapi
+     *
+     * /update:
+     *  patch:
+     *    summary: update existing authenticator
+     *    requestBody:
+     *      content:
+     *        application/json:
+     *          schema:
+     *            type: object
+     *            properties:
+     *              id:
+     *                type: string
+     *                format: uuid
+     *                required: true
+     *              name:
+     *                type: string
+     *              key:
+     *                type: string
+     *    responses:
+     *      '200':
+     *        description: Successful response
+     *        content:
+     *          application/json: {}
+     */
+
     .patch(
       '/update',
+      authorizationMiddleware,
       validate('BODY', AuthenticatorUpdateDto),
       wrapper(async function (request) {
         const authenticator = await authenticatorService.update(
@@ -64,8 +133,27 @@ export const controller = Router();
       }),
     )
 
+    /**
+     * @openapi
+     *
+     * /delete/{id}:
+     *  delete:
+     *    summary: delete authenticator by id
+     *    parameters:
+     *      - name: id
+     *        in: path
+     *        schema:
+     *          type: string
+     *          format: uuid
+     *          required: true
+     *    responses:
+     *      '200':
+     *        description: Successful response
+     */
+
     .delete(
       '/delete/:id',
+      authorizationMiddleware,
       validate('PARAMS', AuthenticatorDeleteDto),
       wrapper(async function (request) {
         const authenticator = await authenticatorService.deleteById(
